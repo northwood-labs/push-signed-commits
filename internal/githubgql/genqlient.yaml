@@ -1,0 +1,15 @@
+---
+schema: schema.graphql
+operations:
+  - operations.graphql
+generated: generated.go
+package: githubgql
+
+# GitHub's custom scalars serialize as plain JSON strings, so bind them to Go's
+# string type. This keeps the generated FileAddition.Contents (Base64String) and
+# commit OID (GitObjectID) fields as strings, matching the Python payload bytes.
+bindings:
+  GitObjectID:
+    type: string
+  Base64String:
+    type: string
