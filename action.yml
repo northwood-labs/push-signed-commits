@@ -45,7 +45,7 @@ runs:
       run: echo "::add-mask::${{ inputs.github-token }}"
       shell: bash
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       with:
         python-version: ${{ inputs.python-version }}
     - name: Install dependencies

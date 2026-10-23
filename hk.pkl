@@ -121,6 +121,10 @@ local linters = new Mapping<String, Group> {
       }
       ["ghalint-action"] = (Builtins.ghalint_action) {}
       ["ghalint-workflow"] = (Builtins.ghalint_workflow) {}
+      ["jactionlint"] {
+        glob = ".github/workflows/*.y*ml"
+        fix = "jactionlint --fix --online --profile=correctness {{ files }}"
+      }
       ["zizmor"] = (Builtins.zizmor) {}
     }
   }

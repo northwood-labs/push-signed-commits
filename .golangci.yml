@@ -280,7 +280,6 @@ linters:
             - github.com/hashicorp/terraform-plugin-framework
             - github.com/hashicorp/terraform-plugin-go
             - github.com/hashicorp/terraform-plugin-log
-            - github.com/Khan/genqlient
             - github.com/lib/pq
             - github.com/lithammer/dedent
             - github.com/microcosm-cc/bluemonday

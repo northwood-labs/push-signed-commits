@@ -21,11 +21,6 @@ concurrency:
   cancel-in-progress: true
 # @config-manager:end workflow-concurrency
 
-# @config-manager:start workflow-permissions
-# Declare default permissions as read only.
-permissions: read-all
-# @config-manager:end workflow-permissions
-
 jobs:
   update_on_push_job:
     # @config-manager:start update-on-push-job
@@ -41,8 +36,8 @@ jobs:
       # @config-manager:start harden-runner
       - name: Harden Runner
         uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
-      # @config-manager:end harden-runner
-      # @config-manager:start step-security-hosts
+        # @config-manager:end harden-runner
+        # @config-manager:start step-security-hosts
         with:
           disable-sudo: true
           egress-policy: block
@@ -188,15 +183,51 @@ jobs:
         with:
           persist-credentials: false
       # @config-manager:end workflow-clone
+      # @config-manager:start github-app-token
+      - name: Fetch temporary app token for job
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        id: gh_token
+        # @config-manager:end github-app-token
+        with:
+          client-id: ${{ vars.CHANGELOG_CLIENT_ID }}
+          private-key: ${{ secrets.CHANGELOG_PRIVATE_KEY }}
+          owner: northwood-labs
+          repositories: |
+            push-signed-commits
+          permission-contents: write
 
-      # @config-manager:start workflow-https-pat
-      # Replace me with GitHub App tokens!
-      - name: Configure Git to use HTTPS with the PAT
+      # @config-manager:start github-app-userid
+      - name: Get GitHub App User ID
+        id: get-user-id
+        env:
+          GH_TOKEN: ${{ steps.gh_token.outputs.token }}
+          STEPS_GH_TOKEN_OUTPUTS_APP_SLUG: ${{ steps.gh_token.outputs.app-slug }}
         run: |
-          git config --global url."https://${{ secrets.GH_PUBLIC_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          git config --global url."https://${{ secrets.GH_PUBLIC_TOKEN }}@github.com".insteadOf "ssh://git@github.com"
+          USER_ID=$(gh api "/users/${STEPS_GH_TOKEN_OUTPUTS_APP_SLUG}[bot]" --jq .id)
+          echo "user-id=${USER_ID}" >> "$GITHUB_OUTPUT"
+      # @config-manager:end github-app-userid
+
+      # @config-manager:start github-app-git-config
+      - name: Set Git config
+        env:
+          GH_TOKEN: ${{ steps.gh_token.outputs.token }}
+          STEPS_GH_TOKEN_OUTPUTS_APP_SLUG: ${{ steps.gh_token.outputs.app-slug }}
+          STEPS_GET_USER_ID_OUTPUTS_USER_ID: ${{ steps.get-user-id.outputs.user-id }}
+        run: |
+          git config --global \
+            url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf \
+            "https://github.com/"
+
           git config --global advice.detachedHead false
-      # @config-manager:end workflow-https-pat
+
+          USERNAME="${STEPS_GH_TOKEN_OUTPUTS_APP_SLUG}[bot]"
+          git config --global user.name "${USERNAME}"
+
+          USER_EMAIL="${STEPS_GET_USER_ID_OUTPUTS_USER_ID}+${STEPS_GH_TOKEN_OUTPUTS_APP_SLUG}[bot]@users.noreply.github.com"
+          git config --global user.email "${USER_EMAIL}"
+
+          gh auth setup-git
+      # @config-manager:end github-app-git-config
 
       # @config-manager:start workflow-gen-changelog
       - name: Generate Changelog
@@ -225,18 +256,15 @@ jobs:
       # @config-manager:start workflow-commit
       - name: Git commit if changed
         env:
+          GH_TOKEN: ${{ steps.gh_token.outputs.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          git config user.name "Northwood Labs (Bot)"
-          git config user.email "bot@northwood-labs.com"
-
           set +e
 
           git add .
-          git status | grep modified
-          if [ $? -eq 0 ]; then
+          if [[ "$(git status)" -eq 0 ]]; then
             git commit -a -m "automation: Updated AUTHORS and CHANGELOG on $(date)."
             git pull --rebase --autostash
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git main
+            git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main
           fi
       # @config-manager:end workflow-commit
