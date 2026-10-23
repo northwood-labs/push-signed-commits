@@ -28,9 +28,9 @@ const (
 )
 
 type (
-	// BranchNameInput carries the values ValidateBranchName needs. BranchType is
-	// "local" or "remote" and appears only in the error message; RemoteName is
-	// the configured remote whose "<RemoteName>/" prefix is also prohibited.
+	// BranchNameInput carries the values ValidateBranchName needs. BranchType
+	// is "local" or "remote" and appears only in the error message; RemoteName
+	// is the configured remote whose "<RemoteName>/" prefix is also prohibited.
 	BranchNameInput struct {
 		BranchName string
 		BranchType string
@@ -41,8 +41,8 @@ type (
 // ValidateBranchName rejects a branch name that includes a ref prefix or the
 // remote name. It returns an error wrapping [ErrInvalidBranchName] when the
 // name begins with "origin/", "refs/heads/", or "<RemoteName>/", naming the
-// offending prefix and whether the local or remote branch name was at fault.
-// A name without any prohibited prefix returns nil.
+// offending prefix and whether the local or remote branch name was at fault. A
+// name without any prohibited prefix returns nil.
 func ValidateBranchName(opts *BranchNameInput) error {
 	if strings.HasPrefix(opts.BranchName, prefixOrigin) {
 		return fmt.Errorf(

@@ -129,11 +129,7 @@ func TestValidateBranchName(t *testing.T) {
 			}
 
 			require.Error(t, err)
-			assert.True(
-				t,
-				errors.Is(err, ErrInvalidBranchName),
-				"expected error to wrap ErrInvalidBranchName",
-			)
+			assert.True(t, errors.Is(err, ErrInvalidBranchName), "expected error to wrap ErrInvalidBranchName")
 
 			for _, fragment := range testCase.errContains {
 				assert.Contains(t, err.Error(), fragment)

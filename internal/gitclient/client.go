@@ -55,13 +55,13 @@ var (
 	ErrNoMergeBase = errors.New("the local and remote branches share no common ancestor")
 
 	// ErrResolveRevision indicates a revision (such as the remote-tracking
-	// branch) could not be resolved to a commit, mirroring a failed
-	// `git rev-parse`.
+	// branch) could not be resolved to a commit, mirroring a failed `git
+	// rev-parse`.
 	ErrResolveRevision = errors.New("failed to resolve the requested git revision")
 
 	// ErrCommitRange indicates the list of local commits not present on the
-	// remote branch (the equivalent of `git rev-list <remote>/<branch>..<local>`)
-	// could not be computed.
+	// remote branch (the equivalent of `git rev-list
+	// <remote>/<branch>..<local>`) could not be computed.
 	ErrCommitRange = errors.New("failed to list the local commits not present on the remote branch")
 
 	// ErrRebaseAborted indicates the rebase onto the upstream branch reported
@@ -113,16 +113,13 @@ func New(path string) (*Client, error) {
 	return &Client{repo: repo}, nil
 }
 
-// RemoteBranchExists reports whether the remote branch exists, mirroring
-// `git ls-remote --exit-code --heads <remote> <branch>`. It lists the remote's
+// RemoteBranchExists reports whether the remote branch exists, mirroring `git
+// ls-remote --exit-code --heads <remote> <branch>`. It lists the remote's
 // references and reports whether refs/heads/<remoteBranchName> is present. A
 // missing branch (an empty match, equivalent to the `--exit-code` non-zero
 // result) is reported as (false, nil); only unexpected failures such as a
 // transport error return a non-nil error.
-func (c *Client) RemoteBranchExists(
-	ctx context.Context,
-	remoteName, remoteBranchName string,
-) (bool, error) {
+func (c *Client) RemoteBranchExists(ctx context.Context, remoteName, remoteBranchName string) (bool, error) {
 	remote, err := c.repo.Remote(remoteName)
 	if err != nil {
 		return false, fmt.Errorf("%w: %w", ErrRemoteBranchList, err)
@@ -175,14 +172,15 @@ func (c *Client) FetchRemoteBranch(
 	return nil
 }
 
-// RebaseOnto replays the local branch onto the latest upstream by running
-// `git rebase <remote>/<branch> <local>`. go-git provides no rebase operation,
-// so this shells out through os/exec, building the argument vector from the
+// RebaseOnto replays the local branch onto the latest upstream by running `git
+// rebase <remote>/<branch> <local>`. go-git provides no rebase operation, so
+// this shells out through os/exec, building the argument vector from the
 // discrete validated branch selectors rather than a shell string (gosec G204).
-// If the rebase reports conflicts or cannot complete cleanly, it runs
-// `git rebase --abort` to restore the pre-rebase state and returns an error
-// wrapping ErrRebaseAborted instructing the operator to reconcile the branches
-// manually. Conflicts are never auto-resolved.
+//
+// If the rebase reports conflicts or cannot complete cleanly, it runs `git
+// rebase --abort` to restore the pre-rebase state and returns an error wrapping
+// ErrRebaseAborted instructing the operator to reconcile the branches manually.
+// Conflicts are never auto-resolved.
 func (c *Client) RebaseOnto(ctx context.Context, opts *RebaseOptions) error {
 	wt, err := c.repo.Worktree()
 	if err != nil {
@@ -207,9 +205,8 @@ func (c *Client) RebaseOnto(ctx context.Context, opts *RebaseOptions) error {
 		return nil
 	}
 
-	// The rebase failed. Abort it to restore the local branch to its
-	// pre-rebase state before surfacing the error. Conflicts are never
-	// auto-resolved.
+	// The rebase failed. Abort it to restore the local branch to its pre-rebase
+	// state before surfacing the error. Conflicts are never auto-resolved.
 	abortDetail := ""
 
 	abortCmd := exec.CommandContext(ctx, "git", "rebase", "--abort") // lint:allow_possible_insecure
@@ -221,20 +218,14 @@ func (c *Client) RebaseOnto(ctx context.Context, opts *RebaseOptions) error {
 		abortDetail = "; the subsequent abort also failed: " + strings.TrimSpace(string(abortOutput))
 	}
 
-	return fmt.Errorf(
-		"%w: %s%s",
-		ErrRebaseAborted,
-		strings.TrimSpace(string(output)),
-		abortDetail,
-	)
+	return fmt.Errorf("%w: %s%s", ErrRebaseAborted, strings.TrimSpace(string(output)), abortDetail)
 }
 
-// MergeBase returns the OID of the best common ancestor of the local branch
-// and the remote-tracking branch, mirroring
-// `git merge-base <local> <remote>/<branch>`. It resolves both selectors to
-// commits and asks go-git for their merge base, returning the first (best)
-// result's hash. An absent common ancestor returns an error wrapping
-// ErrNoMergeBase.
+// MergeBase returns the OID of the best common ancestor of the local branch and
+// the remote-tracking branch, mirroring `git merge-base <local>
+// <remote>/<branch>`. It resolves both selectors to commits and asks go-git for
+// their merge base, returning the first (best) result's hash. An absent common
+// ancestor returns an error wrapping ErrNoMergeBase.
 func (c *Client) MergeBase(_ context.Context, opts *MergeBaseOptions) (string, error) {
 	localCommit, err := c.resolveCommit(opts.LocalBranchName)
 	if err != nil {
@@ -301,7 +292,6 @@ func (c *Client) CommitsNotOnRemote(_ context.Context, opts *CommitRangeOptions)
 	newestFirst := []string(nil)
 
 	walker := object.NewCommitPreorderIter(localCommit, nil, nil)
-
 	err = walker.ForEach(func(commit *object.Commit) error {
 		if _, found := excluded[commit.Hash]; found {
 			// This commit (and its ancestors) are already on the remote, so

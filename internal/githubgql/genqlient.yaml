@@ -7,7 +7,7 @@ package: githubgql
 
 # GitHub's custom scalars serialize as plain JSON strings, so bind them to Go's
 # string type. This keeps the generated FileAddition.Contents (Base64String) and
-# commit OID (GitObjectID) fields as strings, matching the Python payload bytes.
+# commit OID (GitObjectID) fields as strings.
 bindings:
   GitObjectID:
     type: string

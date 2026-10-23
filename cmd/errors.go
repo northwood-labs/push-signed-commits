@@ -32,12 +32,13 @@ var (
 		"rebase onto the remote branch was aborted; reconcile the branches manually",
 	)
 
-	// ErrRemoteBranchDiverged indicates that the remote branch head has diverged
-	// from the local branch, so the local commits cannot be replayed safely.
+	// ErrRemoteBranchDiverged indicates that the remote branch head has
+	// diverged from the local branch, so the local commits cannot be replayed
+	// safely.
 	ErrRemoteBranchDiverged = errors.New("remote branch has diverged from the local branch")
 
-	// ErrGithubAPI indicates that GitHub's GraphQL API returned an unexpected or
-	// error response while creating a commit.
+	// ErrGithubAPI indicates that GitHub's GraphQL API returned an unexpected
+	// or error response while creating a commit.
 	ErrGithubAPI = errors.New("GitHub API returned an unexpected response")
 
 	// ErrPartialPushFailure indicates that only some commits were pushed before

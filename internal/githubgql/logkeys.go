@@ -26,6 +26,7 @@ const (
 	// on.
 	LogKeyBranchName = "branch_name"
 
-	// LogKeyErrorContent is the content of a GraphQL error response from GitHub.
+	// LogKeyErrorContent is the content of a GraphQL error response from
+	// GitHub.
 	LogKeyErrorContent = "error_content"
 )

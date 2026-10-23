@@ -30,6 +30,10 @@ max_line_length = 20000
 [*.go]
 indent_style = tab
 
+[*.graphql]
+indent_size = 2
+max_line_length = 20000
+
 [*.{md,md.tmpl,md.gotmpl,mdx}]
 indent_size = 2
 max_line_length = 20000

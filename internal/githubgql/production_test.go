@@ -44,11 +44,7 @@ type (
 // MakeRequest either returns the scripted error or populates the generated
 // response's commit OID. It satisfies the [graphql.Client] interface so a
 // *Client can be driven end-to-end without a live endpoint.
-func (s *stubGraphQLClient) MakeRequest(
-	_ context.Context,
-	_ *graphql.Request,
-	resp *graphql.Response,
-) error {
+func (s *stubGraphQLClient) MakeRequest(_ context.Context, _ *graphql.Request, resp *graphql.Response) error {
 	if s.makeErr != nil {
 		return s.makeErr
 	}

@@ -19,4 +19,5 @@ package githubgql
 // genqlient.yaml. Regenerate them with `go generate ./internal/githubgql/...`.
 // The directive lives here rather than in generated.go because genqlient
 // overwrites generated.go on every run and does not preserve directives.
+
 //go:generate go run github.com/Khan/genqlient

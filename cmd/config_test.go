@@ -30,12 +30,11 @@ func newTestCommand() *cobra.Command {
 	cmd := &cobra.Command{Use: appName}
 	flags := cmd.Flags()
 
-	flags.String(FlagGithubToken, "", "")
-	flags.String(FlagRepoWithOwner, "", "")
+	flags.String(FlagOwnerRepo, "", "")
 	flags.String(FlagLocalBranch, "", "")
 	flags.String(FlagRemoteName, "", "")
 	flags.String(FlagRemoteBranch, "", "")
-	flags.String(FlagLogLevel, DefaultLogLevel, "")
+	flags.CountP(FlagVerbose, "v", "")
 
 	return cmd
 }
@@ -51,139 +50,124 @@ func TestResolveConfigPriority(t *testing.T) {
 		{
 			name: "flags only with default log level",
 			args: []string{
-				"--github-token", "flag-token",
-				"--repository-name-with-owner", "owner/repo",
-				"--local-branch-name", "feature",
+				"--owner-repo", "owner/repo",
+				"--local-branch", "feature",
 				"--remote-name", "origin",
-				"--remote-branch-name", "main",
+				"--remote-branch", "main",
 			},
 			expected: &Config{
-				GithubToken:             "flag-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "feature",
-				RemoteName:              "origin",
-				RemoteBranchName:        "main",
-				LogLevel:                DefaultLogLevel,
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "feature",
+				RemoteName:   "origin",
+				RemoteBranch: "main",
 			},
 		},
 		{
-			name: "explicit log level flag overrides default",
+			name: "explicit verbose flag overrides default",
 			args: []string{
-				"--github-token", "flag-token",
-				"--repository-name-with-owner", "owner/repo",
-				"--local-branch-name", "feature",
+				"--owner-repo", "owner/repo",
+				"--local-branch", "feature",
 				"--remote-name", "origin",
-				"--remote-branch-name", "main",
-				"--log-level", "DEBUG",
+				"--remote-branch", "main",
+				"-vv",
 			},
 			expected: &Config{
-				GithubToken:             "flag-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "feature",
-				RemoteName:              "origin",
-				RemoteBranchName:        "main",
-				LogLevel:                "DEBUG",
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "feature",
+				RemoteName:   "origin",
+				RemoteBranch: "main",
+				Verbose:      2,
 			},
 		},
 		{
 			name: "environment variable fills unset flag",
 			args: []string{
-				"--repository-name-with-owner", "owner/repo",
-				"--local-branch-name", "feature",
+				"--owner-repo", "owner/repo",
+				"--local-branch", "feature",
 				"--remote-name", "origin",
-				"--remote-branch-name", "main",
+				"--remote-branch", "main",
 			},
 			env: map[string]string{
-				envPrefix + "GITHUB_TOKEN": "env-token",
-				envPrefix + "LOG_LEVEL":    "INFO",
+				envPrefix + "VERBOSE": "1",
 			},
 			expected: &Config{
-				GithubToken:             "env-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "feature",
-				RemoteName:              "origin",
-				RemoteBranchName:        "main",
-				LogLevel:                "INFO",
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "feature",
+				RemoteName:   "origin",
+				RemoteBranch: "main",
+				Verbose:      1,
 			},
 		},
 		{
 			name: "flag overrides environment variable",
 			args: []string{
-				"--github-token", "flag-token",
-				"--repository-name-with-owner", "owner/repo",
-				"--local-branch-name", "feature",
+				"--owner-repo", "owner/repo",
+				"--local-branch", "feature",
 				"--remote-name", "origin",
-				"--remote-branch-name", "main",
+				"--remote-branch", "main",
+				"-vv",
 			},
 			env: map[string]string{
-				envPrefix + "GITHUB_TOKEN": "env-token",
+				envPrefix + "VERBOSE": "1",
 			},
 			expected: &Config{
-				GithubToken:             "flag-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "feature",
-				RemoteName:              "origin",
-				RemoteBranchName:        "main",
-				LogLevel:                DefaultLogLevel,
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "feature",
+				RemoteName:   "origin",
+				RemoteBranch: "main",
+				Verbose:      2,
 			},
 		},
 		{
 			name: "local config file fills unset values",
 			args: []string{
-				"--github-token", "flag-token",
-				"--repository-name-with-owner", "owner/repo",
+				"--owner-repo", "owner/repo",
 				"--remote-name", "origin",
 			},
-			fileBody: "local-branch-name = \"from-file\"\n" +
-				"remote-branch-name = \"release\"\n" +
-				"log-level = \"ERROR\"\n",
+			fileBody: "local-branch = \"from-file\"\n" +
+				"remote-branch = \"release\"\n" +
+				"verbose = 2\n",
 			expected: &Config{
-				GithubToken:             "flag-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "from-file",
-				RemoteName:              "origin",
-				RemoteBranchName:        "release",
-				LogLevel:                "ERROR",
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "from-file",
+				RemoteName:   "origin",
+				RemoteBranch: "release",
+				Verbose:      2,
 			},
 		},
 		{
 			name: "env overrides local config file",
 			args: []string{
-				"--github-token", "flag-token",
-				"--repository-name-with-owner", "owner/repo",
-				"--local-branch-name", "feature",
+				"--owner-repo", "owner/repo",
+				"--local-branch", "feature",
 				"--remote-name", "origin",
-				"--remote-branch-name", "main",
+				"--remote-branch", "main",
 			},
 			env: map[string]string{
-				envPrefix + "LOG_LEVEL": "INFO",
+				envPrefix + "VERBOSE": "2",
 			},
-			fileBody: "log-level = \"ERROR\"\n",
+			fileBody: "verbose = 1\n",
 			expected: &Config{
-				GithubToken:             "flag-token",
-				RepositoryNameWithOwner: "owner/repo",
-				LocalBranchName:         "feature",
-				RemoteName:              "origin",
-				RemoteBranchName:        "main",
-				LogLevel:                "INFO",
+				OwnerRepo:    "owner/repo",
+				LocalBranch:  "feature",
+				RemoteName:   "origin",
+				RemoteBranch: "main",
+				Verbose:      2,
 			},
 		},
 		{
 			name: "flag values are passed through unaltered",
 			args: []string{
-				"--github-token", "  spaced token  ",
-				"--repository-name-with-owner", "Owner/Repo.Name",
-				"--local-branch-name", "feature/ABC-123",
+				"--owner-repo", "Owner/Repo.Name",
+				"--local-branch", "feature/ABC-123",
 				"--remote-name", "upstream",
-				"--remote-branch-name", "main",
+				"--remote-branch", "main",
 			},
 			expected: &Config{
-				GithubToken:             "  spaced token  ",
-				RepositoryNameWithOwner: "Owner/Repo.Name",
-				LocalBranchName:         "feature/ABC-123",
-				RemoteName:              "upstream",
-				RemoteBranchName:        "main",
-				LogLevel:                DefaultLogLevel,
+				OwnerRepo:    "Owner/Repo.Name",
+				LocalBranch:  "feature/ABC-123",
+				RemoteName:   "upstream",
+				RemoteBranch: "main",
 			},
 		},
 	}

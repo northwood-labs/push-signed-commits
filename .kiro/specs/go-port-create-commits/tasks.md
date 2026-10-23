@@ -30,13 +30,13 @@ This plan ports `create_commits.py` to the Go module `go.nwlabs.dev/push-signed-
 
 - [x] 2. Implement CLI flags, configuration, and logging
   - [x] 2.1 Register the six named flags and resolve configuration
-    - In `cmd/root.go` `init()` (marked `// lint:allow_init`), register `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and `--log-level` using `f`-prefixed variables
-    - Mark the five required flags with Cobra's required-flag mechanism so an omitted flag reports a usage error and exits non-zero; default `--log-level` to `WARN`
+    - In `cmd/root.go` `init()` (marked `// lint:allow_init`), register `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and the repeatable `--verbose` / `-v` count using `f`-prefixed variables
+    - Mark the five required flags with Cobra's required-flag mechanism so an omitted flag reports a usage error and exits non-zero; `--verbose` is optional and defaults to a count of `0`
     - Resolve values through koanf in the standard priority order (CLI flag, env, local config, user config, global config) into a `Config` struct, passing flag string values to consumers unaltered
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 
-  - [x] 2.2 Configure logging from the resolved log level
-    - Configure `go.nwlabs.dev/x/logutils` at startup to the level named by `--log-level`, defaulting to `WARN` so info and debug are suppressed
+  - [x] 2.2 Configure logging from the resolved verbosity count
+    - Configure `go.nwlabs.dev/x/logutils` at startup from the `--verbose` / `-v` count (`0` → `WARN`, `1` → `INFO`, `>= 2` → `DEBUG`), defaulting to `0` so info and debug are suppressed
     - Use the slog `*Context` variants everywhere and the `snake_case` key constants from `cmd/logkeys.go`
     - _Requirements: 3.1, 3.2, 3.3_
 

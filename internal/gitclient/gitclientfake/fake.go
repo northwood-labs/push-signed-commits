@@ -29,17 +29,17 @@ import (
 	"go.nwlabs.dev/push-signed-commits/internal/gitclient"
 )
 
-// Compile-time assertion that Fake satisfies the gitclient.GitClient
-// interface. This also keeps the gitclient.GitClient interface referenced,
-// clearing any unused warning.
+// Compile-time assertion that Fake satisfies the gitclient.GitClient interface.
+// This also keeps the gitclient.GitClient interface referenced, clearing any
+// unused warning.
 var _ gitclient.GitClient = (*Fake)(nil)
 
 type (
 	// Fake is a hand-written fake implementation of gitclient.GitClient.
-	// Populate the *Result fields with the values each method should return
-	// and inspect the *Calls slices afterward to assert on the arguments the
-	// code under test passed. The zero value returns zero values and nil
-	// errors for every method.
+	// Populate the *Result fields with the values each method should return and
+	// inspect the *Calls slices afterward to assert on the arguments the code
+	// under test passed. The zero value returns zero values and nil errors for
+	// every method.
 	Fake struct {
 		RemoteBranchExistsResult   RemoteBranchExistsResult
 		FetchRemoteBranchResult    FetchRemoteBranchResult
@@ -119,15 +119,13 @@ type (
 		Contents []byte
 	}
 
-	// RemoteBranchExistsCall records one invocation of
-	// Fake.RemoteBranchExists.
+	// RemoteBranchExistsCall records one invocation of Fake.RemoteBranchExists.
 	RemoteBranchExistsCall struct {
 		RemoteName       string
 		RemoteBranchName string
 	}
 
-	// FetchRemoteBranchCall records one invocation of
-	// Fake.FetchRemoteBranch.
+	// FetchRemoteBranchCall records one invocation of Fake.FetchRemoteBranch.
 	FetchRemoteBranchCall struct {
 		RemoteName       string
 		RemoteBranchName string
@@ -149,14 +147,12 @@ type (
 		RemoteBranchName string
 	}
 
-	// CommitsNotOnRemoteCall records one invocation of
-	// Fake.CommitsNotOnRemote.
+	// CommitsNotOnRemoteCall records one invocation of Fake.CommitsNotOnRemote.
 	CommitsNotOnRemoteCall struct {
 		Opts *gitclient.CommitRangeOptions
 	}
 
-	// CommitMessageBodyCall records one invocation of
-	// Fake.CommitMessageBody.
+	// CommitMessageBodyCall records one invocation of Fake.CommitMessageBody.
 	CommitMessageBodyCall struct {
 		CommitHash string
 	}
@@ -174,12 +170,9 @@ type (
 	}
 )
 
-// RemoteBranchExists records its arguments and returns the table-defined
-// result from RemoteBranchExistsResult.
-func (f *Fake) RemoteBranchExists(
-	_ context.Context,
-	remoteName, remoteBranchName string,
-) (bool, error) {
+// RemoteBranchExists records its arguments and returns the table-defined result
+// from RemoteBranchExistsResult.
+func (f *Fake) RemoteBranchExists(_ context.Context, remoteName, remoteBranchName string) (bool, error) {
 	f.RemoteBranchExistsCalls = append(f.RemoteBranchExistsCalls, RemoteBranchExistsCall{
 		RemoteName:       remoteName,
 		RemoteBranchName: remoteBranchName,
@@ -188,12 +181,9 @@ func (f *Fake) RemoteBranchExists(
 	return f.RemoteBranchExistsResult.Exists, f.RemoteBranchExistsResult.Err
 }
 
-// FetchRemoteBranch records its arguments and returns the table-defined
-// result from FetchRemoteBranchResult.
-func (f *Fake) FetchRemoteBranch(
-	_ context.Context,
-	remoteName, remoteBranchName string,
-) error {
+// FetchRemoteBranch records its arguments and returns the table-defined result
+// from FetchRemoteBranchResult.
+func (f *Fake) FetchRemoteBranch(_ context.Context, remoteName, remoteBranchName string) error {
 	f.FetchRemoteBranchCalls = append(f.FetchRemoteBranchCalls, FetchRemoteBranchCall{
 		RemoteName:       remoteName,
 		RemoteBranchName: remoteBranchName,
@@ -218,12 +208,9 @@ func (f *Fake) MergeBase(_ context.Context, opts *gitclient.MergeBaseOptions) (s
 	return f.MergeBaseResult.OID, f.MergeBaseResult.Err
 }
 
-// RemoteHeadOID records its arguments and returns the table-defined result
-// from RemoteHeadOIDResult.
-func (f *Fake) RemoteHeadOID(
-	_ context.Context,
-	remoteName, remoteBranchName string,
-) (string, error) {
+// RemoteHeadOID records its arguments and returns the table-defined result from
+// RemoteHeadOIDResult.
+func (f *Fake) RemoteHeadOID(_ context.Context, remoteName, remoteBranchName string) (string, error) {
 	f.RemoteHeadOIDCalls = append(f.RemoteHeadOIDCalls, RemoteHeadOIDCall{
 		RemoteName:       remoteName,
 		RemoteBranchName: remoteBranchName,
@@ -232,19 +219,16 @@ func (f *Fake) RemoteHeadOID(
 	return f.RemoteHeadOIDResult.OID, f.RemoteHeadOIDResult.Err
 }
 
-// CommitsNotOnRemote records its arguments and returns the table-defined
-// result from CommitsNotOnRemoteResult.
-func (f *Fake) CommitsNotOnRemote(
-	_ context.Context,
-	opts *gitclient.CommitRangeOptions,
-) ([]string, error) {
+// CommitsNotOnRemote records its arguments and returns the table-defined result
+// from CommitsNotOnRemoteResult.
+func (f *Fake) CommitsNotOnRemote(_ context.Context, opts *gitclient.CommitRangeOptions) ([]string, error) {
 	f.CommitsNotOnRemoteCalls = append(f.CommitsNotOnRemoteCalls, CommitsNotOnRemoteCall{Opts: opts})
 
 	return f.CommitsNotOnRemoteResult.Hashes, f.CommitsNotOnRemoteResult.Err
 }
 
-// CommitMessageBody records its arguments and returns the table-defined
-// result from CommitMessageBodyResult.
+// CommitMessageBody records its arguments and returns the table-defined result
+// from CommitMessageBodyResult.
 func (f *Fake) CommitMessageBody(_ context.Context, commitHash string) (string, error) {
 	f.CommitMessageBodyCalls = append(f.CommitMessageBodyCalls, CommitMessageBodyCall{
 		CommitHash: commitHash,
@@ -263,10 +247,7 @@ func (f *Fake) NameStatus(_ context.Context, commitHash string) ([]string, error
 
 // FileContentsAtCommit records its arguments and returns the table-defined
 // result from FileContentsAtCommitResult.
-func (f *Fake) FileContentsAtCommit(
-	_ context.Context,
-	commitHash, path string,
-) ([]byte, error) {
+func (f *Fake) FileContentsAtCommit(_ context.Context, commitHash, path string) ([]byte, error) {
 	f.FileContentsAtCommitCalls = append(f.FileContentsAtCommitCalls, FileContentsAtCommitCall{
 		CommitHash: commitHash,
 		Path:       path,

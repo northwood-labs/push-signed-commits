@@ -29,26 +29,23 @@ import (
 )
 
 const (
-	// FlagGithubToken is the name of the --github-token flag.
-	FlagGithubToken = "github-token"
+	// FlagOwnerRepo is the name of the --owner-repo flag.
+	FlagOwnerRepo = "owner-repo"
 
-	// FlagRepoWithOwner is the name of the --repository-name-with-owner flag.
-	FlagRepoWithOwner = "repository-name-with-owner"
-
-	// FlagLocalBranch is the name of the --local-branch-name flag.
-	FlagLocalBranch = "local-branch-name"
+	// FlagLocalBranch is the name of the --local-branch flag.
+	FlagLocalBranch = "local-branch"
 
 	// FlagRemoteName is the name of the --remote-name flag.
 	FlagRemoteName = "remote-name"
 
-	// FlagRemoteBranch is the name of the --remote-branch-name flag.
-	FlagRemoteBranch = "remote-branch-name"
+	// FlagRemoteBranch is the name of the --remote-branch flag.
+	FlagRemoteBranch = "remote-branch"
 
-	// FlagLogLevel is the name of the --log-level flag.
-	FlagLogLevel = "log-level"
+	// FlagVerbose is the name of the --verbose flag.
+	FlagVerbose = "verbose"
 
-	// DefaultLogLevel is the log level used when --log-level is omitted.
-	DefaultLogLevel = "WARN"
+	// DefaultVerbose is the verbosity count used when --verbose is omitted.
+	DefaultVerbose = 0
 
 	// appName is the application name used to locate configuration files and to
 	// derive the environment-variable prefix.
@@ -59,35 +56,38 @@ const (
 	configFileName = "config.toml"
 
 	// envPrefix is the prefix for environment variables that override config,
-	// for example PUSH_SIGNED_COMMITS_GITHUB_TOKEN maps to github-token.
+	// for example PUSH_SIGNED_COMMITS_OWNER_REPO maps to owner-repo.
 	envPrefix = "PUSH_SIGNED_COMMITS_"
 
 	// keyDelim is the koanf key-path delimiter. Flag names use dashes rather
 	// than dots, so no nesting is introduced by this delimiter.
 	keyDelim = "."
 
-	// globalConfigDir is the directory that holds the global configuration file.
+	// globalConfigDir is the directory that holds the global configuration
+	// file.
 	globalConfigDir = "/etc"
 )
 
 type (
 	// Config holds the resolved input values for one run. Values are populated
-	// by koanf in the standard priority order and passed to consumers unaltered.
+	// by koanf in the standard priority order and passed to consumers
+	// unaltered.
 	Config struct {
-		GithubToken             string `koanf:"github-token"`
-		RepositoryNameWithOwner string `koanf:"repository-name-with-owner"`
-		LocalBranchName         string `koanf:"local-branch-name"`
-		RemoteName              string `koanf:"remote-name"`
-		RemoteBranchName        string `koanf:"remote-branch-name"`
-		LogLevel                string `koanf:"log-level"`
+		LocalBranch  string `koanf:"local-branch"`
+		OwnerRepo    string `koanf:"owner-repo"`
+		RemoteBranch string `koanf:"remote-branch"`
+		RemoteName   string `koanf:"remote-name"`
+		Verbose      int    `koanf:"verbose"`
 	}
 )
 
 // ResolveConfig resolves the six configuration values through koanf in the
 // repository's standard priority order (highest priority first): CLI flag,
 // environment variable, local config file, user config file, global config
-// file. A higher-priority source always overrides a lower-priority one. Flag
-// string values are carried into the returned Config without transformation.
+// file.
+//
+// A higher-priority source always overrides a lower-priority one. Flag string
+// values are carried into the returned Config without transformation.
 func ResolveConfig(cmd *cobra.Command) (*Config, error) {
 	k := koanf.New(keyDelim)
 
@@ -145,8 +145,8 @@ func configFilePaths() []string {
 }
 
 // userConfigBase returns the base directory for user configuration, honoring
-// $XDG_CONFIG_HOME and falling back to $HOME/.config per the XDG Base
-// Directory Specification. It returns an empty string when neither is set.
+// $XDG_CONFIG_HOME and falling back to $HOME/.config per the XDG Base Directory
+// Specification. It returns an empty string when neither is set.
 func userConfigBase() string {
 	xdg := os.Getenv("XDG_CONFIG_HOME")
 	if xdg != "" {
@@ -183,7 +183,7 @@ func loadConfigFile(k *koanf.Koanf, path string) error {
 
 // transformEnvKey maps a prefixed environment variable name to its config key.
 // It strips the envPrefix, lowercases the remainder, and converts underscores
-// to dashes so that PUSH_SIGNED_COMMITS_GITHUB_TOKEN becomes github-token.
+// to dashes so that PUSH_SIGNED_COMMITS_OWNER_REPO becomes owner-repo.
 func transformEnvKey(key, value string) (string, any) {
 	trimmed := strings.TrimPrefix(key, envPrefix)
 	normalized := strings.ReplaceAll(strings.ToLower(trimmed), "_", "-")

@@ -27,7 +27,7 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 * **Merge_Base_OID**: The commit OID returned by `git merge-base <local_branch> <remote_name>/<remote_branch>`, used as the parent OID for the first created commit.
 * **Rebase_Step**: The step in which the Git_Client fetches the latest remote branch state and attempts to rebase the local branch onto `<remote_name>/<remote_branch_name>`, aborting without auto-resolving when the rebase cannot complete cleanly. This step is an intentional deviation from the Python implementation, which performs no rebase.
 * **Payload_Threshold**: The maximum estimated JSON payload size per GraphQL request, set to 40 MB (40 * 1024 * 1024 bytes), chosen to stay under GitHub's 45 MB GraphQL payload limit.
-* **Log_Level**: The verbosity level for logging, matching Python's logging levels (for example DEBUG, INFO, WARNING, ERROR), defaulting to `WARN`.
+* **Verbosity_Count**: The logging verbosity expressed as a repeatable `--verbose` / `-v` count, defaulting to `0`. A count of `0` selects `WARN`, `1` selects `INFO`, and `2` or more selects `DEBUG` (clamped at `DEBUG`).
 * **Partial_Push_Failure**: The error condition raised when some but not all commits were pushed because the remote branch head no longer matches the expected value partway through pushing.
 * **Github_API_Error**: The error condition raised when the GitHub GraphQL API returns an error or an unexpected response format.
 * **Remote_Branch_Diverged_Error**: The error condition raised when the remote branch head does not equal the merge base before pushing begins.
@@ -41,9 +41,9 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 
 #### Acceptance Criteria
 
-1. THE Argument_Parser SHALL accept six named flags: `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and `--log-level`.
+1. THE Argument_Parser SHALL accept six named flags: `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and `--verbose` / `-v`.
 2. THE Argument_Parser SHALL accept the named flags in any order.
-3. WHERE the `--log-level` flag is omitted, THE Argument_Parser SHALL use the default value `WARN`.
+3. WHERE the `--verbose` / `-v` flag is omitted, THE Argument_Parser SHALL use the default count `0`, which selects the `WARN` level.
 4. IF any required flag (`--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, or `--remote-branch-name`) is omitted, THEN THE Argument_Parser SHALL report a usage error and exit with a non-zero exit code.
 5. THE Argument_Parser SHALL treat the `--github-token` flag value as the GitHub personal access token used for GraphQL authentication.
 6. THE Argument_Parser SHALL treat the `--repository-name-with-owner` flag value as the GitHub repository identifier in owner/name form used in the GraphQL mutation.
@@ -69,9 +69,9 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 
 #### Acceptance Criteria
 
-1. WHEN the CLI_Tool starts, THE CLI_Tool SHALL configure logging at the level named by the log_level argument.
+1. WHEN the CLI_Tool starts, THE CLI_Tool SHALL configure logging at the level selected by the `--verbose` / `-v` count, where `0` is `WARN`, `1` is `INFO`, and `2` or more is `DEBUG`.
 2. THE CLI_Tool SHALL emit informational, debug, warning, and error log messages that correspond to the same events the Python implementation logs at each level.
-3. WHERE the log_level is `WARN`, THE CLI_Tool SHALL suppress informational and debug log messages.
+3. WHERE the verbosity count is `0`, THE CLI_Tool SHALL suppress informational and debug log messages.
 
 ### Requirement 4: Remote Branch Existence Verification
 
@@ -107,7 +107,7 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 1. WHEN collecting commits to push, THE Commit_Collector SHALL run `git rev-list <remote_name>/<remote_branch_name>..<local_branch_name>` to obtain the list of local commit hashes not present on the remote branch.
 2. THE Commit_Collector SHALL order the resulting commit hashes from oldest to newest by reversing the order returned by `git rev-list`.
 3. THE Commit_Collector SHALL log the count of commits found on the local branch that are not on the remote branch.
-4. WHERE the Log_Level permits debug output, THE Commit_Collector SHALL log the list of commit hashes to be created on the remote branch.
+4. WHERE the verbosity count permits debug output, THE Commit_Collector SHALL log the list of commit hashes to be created on the remote branch.
 
 ### Requirement 7: Build Commit Message For Each Local Commit
 
@@ -131,7 +131,7 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 3. WHEN the status field is `A` or `M`, THE File_Change_Builder SHALL add a FileAddition whose path is the last filename field and whose contents are the base64-encoded contents of that file at the commit.
 4. WHEN the status field contains `R`, THE File_Change_Builder SHALL add a FileDeletion for the first filename field (the old name) and a FileAddition whose path is the second filename field (the new name) and whose contents are the base64-encoded contents of the new file at the commit.
 5. WHEN the status field is `D`, THE File_Change_Builder SHALL add a FileDeletion whose path is the first filename field.
-6. WHERE the Log_Level permits debug output, THE File_Change_Builder SHALL log the raw `git diff --name-status` output.
+6. WHERE the verbosity count permits debug output, THE File_Change_Builder SHALL log the raw `git diff --name-status` output.
 7. THE File_Change_Builder SHALL log the detected status and filenames for each change independently of the debug-level check that gates the raw `git diff --name-status` output logging.
 
 ### Requirement 9: Read File Contents At A Commit

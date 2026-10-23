@@ -75,3 +75,11 @@
     'configs/templates/.github/workflows/trufflehog.yml',
   ]
   destination = '.github/workflows/trufflehog.yml'
+
+#-------------------------------------------------------------------------------
+# STEERING FILES
+
+[[files]]
+  stub        = 'configs/stubs/.kiro/steering/commit-rules.md'
+  source      = 'configs/templates/.kiro/steering/commit-rules.md'
+  destination = '.kiro/steering/commit-rules.md'

@@ -14,5 +14,5 @@
 
 // Package cmd implements the command-line interface for push-signed-commits,
 // which recreates local commits on a remote branch as verified commits through
-// GitHub's GraphQL createCommitOnBranch mutation.
+// GitHub's GraphQL `createCommitOnBranch` mutation.
 package cmd

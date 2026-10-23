@@ -62,10 +62,7 @@ type (
 
 // CreateCommitOnBranch records the input and returns the next scripted result.
 // When the scripted results are exhausted, it returns ErrFakeExhausted.
-func (f *Fake) CreateCommitOnBranch(
-	_ context.Context,
-	input *githubgql.CreateCommitInput,
-) (string, error) {
+func (f *Fake) CreateCommitOnBranch(_ context.Context, input *githubgql.CreateCommitInput) (string, error) {
 	if input != nil {
 		f.Calls = append(f.Calls, *input)
 	}

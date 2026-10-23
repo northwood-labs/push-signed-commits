@@ -31,8 +31,7 @@ const (
 	// graphqlEndpoint is GitHub's GraphQL API endpoint.
 	graphqlEndpoint = "https://api.github.com/graphql"
 
-	// requestTimeout bounds every GraphQL request, matching the Python tool's
-	// 600-second HTTP timeout.
+	// requestTimeout bounds every GraphQL request.
 	requestTimeout = 600 * time.Second
 
 	// staleDataType is the GraphQL error extension type that indicates the
@@ -44,7 +43,7 @@ const (
 var _ GraphQLClient = (*Client)(nil)
 
 type (
-	// Client is the production [GraphQLClient]. It wraps the genqlient-generated
+	// Client is the production [GraphQLClient]. It wraps the generated
 	// createCommitOnBranch operation with an authenticating HTTP transport and
 	// maps transport and GraphQL errors onto the package sentinels, preserving
 	// the STALE_DATA distinction used to detect a partial push.
@@ -93,16 +92,16 @@ func NewClient(githubToken string) *Client {
 }
 
 // CreateCommitOnBranch posts the createCommitOnBranch mutation and returns the
-// created commit OID. It interprets the (response, error) pair in the same
-// order as the Python tool: a transport or HTTP failure that does not carry a
-// GraphQL error list maps to ErrGithubAPI; a GraphQL error list containing a
-// STALE_DATA entry maps to ErrPartialPushFailure; any other GraphQL error list
-// maps to ErrGithubAPI; a successful response with a missing OID maps to
-// ErrGithubAPI; otherwise the OID is returned.
-func (c *Client) CreateCommitOnBranch(
-	ctx context.Context,
-	input *CreateCommitInput,
-) (string, error) {
+// created commit OID.
+//
+//   - A transport or HTTP failure that does not carry a GraphQL error list maps
+//     to ErrGithubAPI
+//   - a GraphQL error list containing a STALE_DATA entry maps to
+//     ErrPartialPushFailure
+//   - any other GraphQL error list maps to ErrGithubAPI
+//   - a successful response with a missing OID maps to ErrGithubAPI
+//   - otherwise the OID is returned.
+func (c *Client) CreateCommitOnBranch(ctx context.Context, input *CreateCommitInput) (string, error) {
 	target := fmt.Sprintf("%s/%s", input.RepositoryNameWithOwner, input.RemoteBranchName)
 
 	resp, err := createCommitOnBranch(ctx, c.gql, CreateCommitOnBranchInput{
@@ -138,11 +137,13 @@ func (c *Client) CreateCommitOnBranch(
 }
 
 // interpretError maps a non-nil error from the generated operation onto a
-// package sentinel and a human-readable detail string. A GraphQL error list
-// carrying a STALE_DATA entry maps to ErrPartialPushFailure; any other error
-// (transport, HTTP, or non-stale GraphQL list) maps to ErrGithubAPI. The caller
-// wraps the sentinel with the detail so the sentinel stays matchable via
-// [errors.Is].
+// package sentinel and a human-readable detail string.
+//
+// A GraphQL error list carrying STALE_DATA maps to ErrPartialPushFailure; any
+// other error (transport, HTTP, or non-stale GQL list) maps to ErrGithubAPI.
+//
+// The caller wraps the sentinel with the detail so the sentinel stays matchable
+// via [errors.Is].
 func interpretError(ctx context.Context, err error, target string) (string, error) {
 	gqlErrors := gqlerror.List{}
 	if !errors.As(err, &gqlErrors) {

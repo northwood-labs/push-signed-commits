@@ -133,8 +133,8 @@
   source      = 'configs/templates/tools/ogvs.config.yaml'
   destination = 'tools/ogvs.config.yaml'
 
-  #-------------------------------------------------------------------------------
-  # FILES WITH HOOKS
+#-------------------------------------------------------------------------------
+# FILES WITH HOOKS
 
 # EditorConfig Checker
 # https://editorconfig-checker.github.io
@@ -145,3 +145,11 @@
 
   [files.post_update_hook]
     bash = 'tomljson ecrc.toml > .editorconfig-checker.json'
+
+#-------------------------------------------------------------------------------
+# STEERING FILES
+
+[[files]]
+  stub = 'configs/stubs/.kiro/steering/core-premises.md'
+  source = 'configs/templates/.kiro/steering/core-premises.md'
+  destination = '.kiro/steering/core-premises.md'

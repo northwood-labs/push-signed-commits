@@ -22,11 +22,10 @@ import (
 )
 
 // TestSplitNameStatusLines verifies the line-splitting transformation that
-// NameStatus applies to raw `git diff --name-status` output. The raw lines
-// must be returned unaltered (tabs and rename scores preserved) so downstream
-// parsing can split each line on tab characters, and the trailing empty
-// element produced by the final newline must be dropped to match Python's
-// splitlines().
+// NameStatus applies to raw `git diff --name-status` output. The raw lines must
+// be returned unaltered (tabs and rename scores preserved) so downstream
+// parsing can split each line on tab characters, and the trailing empty element
+// produced by the final newline must be dropped to match Python's splitlines().
 func TestSplitNameStatusLines(t *testing.T) {
 	testCases := []struct {
 		name     string

@@ -45,11 +45,12 @@ const (
 	// LogKeyChangeStatus is the detected status code for a single file change.
 	LogKeyChangeStatus = "change_status"
 
-	// LogKeyFileNames is the set of filenames detected for a single file change.
+	// LogKeyFileNames is the set of filenames detected for a single file
+	// change.
 	LogKeyFileNames = "file_names"
 
-	// LogKeyPayloadMegabytes is the approximate payload size in megabytes when a
-	// commit must be split.
+	// LogKeyPayloadMegabytes is the approximate payload size in megabytes when
+	// a commit must be split.
 	LogKeyPayloadMegabytes = "payload_megabytes"
 
 	// LogKeyChunkCount is the number of chunks produced for a split commit.
@@ -58,6 +59,7 @@ const (
 	// LogKeyCreatedCount is the number of commits created on the remote branch.
 	LogKeyCreatedCount = "created_count"
 
-	// LogKeyErrorContent is the content of a GraphQL error response from GitHub.
+	// LogKeyErrorContent is the content of a GraphQL error response from
+	// GitHub.
 	LogKeyErrorContent = "error_content"
 )

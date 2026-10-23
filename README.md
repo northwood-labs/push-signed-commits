@@ -51,9 +51,9 @@ The action is intended to be used by GitHub Actions as a follow-up to a commit s
   uses: northwood-labs/push-signed-commits@v2
   with:
     github-token: ${{ steps.generate-token.outputs.token }}
-    local_branch_name: main
+    local_branch: main
     remote_name: origin
-    remote_branch_name: main
+    remote_branch: main
 ```
 
 As a final step, the local branch will be reset to match the remote branch using `git reset --hard`

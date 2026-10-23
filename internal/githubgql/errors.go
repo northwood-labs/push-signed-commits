@@ -17,9 +17,9 @@ package githubgql
 import "errors"
 
 var (
-	// ErrGithubAPI indicates that GitHub's GraphQL API returned an unexpected or
-	// error response while creating a commit. The cmd package compares against
-	// its own boundary sentinel via [errors.Is].
+	// ErrGithubAPI indicates that GitHub's GraphQL API returned an unexpected
+	// or error response while creating a commit. The cmd package compares
+	// against its own boundary sentinel via [errors.Is].
 	ErrGithubAPI = errors.New("GitHub API returned an unexpected response")
 
 	// ErrPartialPushFailure indicates that the expected head of the remote

@@ -210,7 +210,7 @@ type Config struct {
     LocalBranchName         string
     RemoteName              string
     RemoteBranchName        string
-    LogLevel                string
+    Verbose                 int
 }
 ```
 
@@ -252,7 +252,7 @@ type (
 
 ## Command-line interface and configuration
 
-The root command registers the six named flags in `init()` (marked `// lint:allow_init`). Flag variables use the lowercase `f` prefix.
+The root command registers the five required named flags plus the optional verbosity counter in `init()` (marked `// lint:allow_init`). Flag variables use the lowercase `f` prefix.
 
 | Flag                           | Variable         | Required | Default | Consumer                          |
 |--------------------------------|------------------|----------|---------|-----------------------------------|
@@ -261,7 +261,7 @@ The root command registers the six named flags in `init()` (marked `// lint:allo
 | `--local-branch-name`          | `fLocalBranch`   | yes      | none    | Branch_Validator, Git_Client      |
 | `--remote-name`                | `fRemoteName`    | yes      | none    | Branch_Validator, Git_Client      |
 | `--remote-branch-name`         | `fRemoteBranch`  | yes      | none    | Branch_Validator, Git_Client      |
-| `--log-level`                  | `fLogLevel`      | no       | `WARN`  | logutils configuration            |
+| `--verbose` / `-v`             | `fVerbose`       | no       | `0`     | logutils configuration            |
 
 Configuration resolves through koanf in the repository's standard priority order: CLI flag, then environment variable, then local config, then user config (`$XDG_CONFIG_HOME/push-signed-commits`), then global config (`/etc/push-signed-commits`). Required flags are enforced by Cobra's required-flag mechanism, which reports a usage error and exits non-zero when any is omitted. Flag values are passed to consumers without transformation, satisfying the parity requirement that string values are not altered.
 
@@ -269,7 +269,7 @@ Configuration resolves through koanf in the repository's standard priority order
 
 ## Logging
 
-Logging uses `go.nwlabs.dev/x/logutils`, configured at startup to the level named by `--log-level` (default `WARN`), so informational and debug messages are suppressed by default. All structured logging uses the slog `*Context` variants (`DebugContext`, `InfoContext`, `WarnContext`, `ErrorContext`) with the request context. Log keys are `snake_case` constants defined in `cmd/logkeys.go`; messages are capitalized. The events logged mirror the Python implementation at each level.
+Logging uses `go.nwlabs.dev/x/logutils`, configured at startup from the `--verbose` / `-v` count (default `0`), so informational and debug messages are suppressed by default. The count maps to a level: `0` is `WARN`, `-v` (`1`) is `INFO`, and `-vv` or more (`>= 2`) is `DEBUG`, clamped at `DEBUG`. All structured logging uses the slog `*Context` variants (`DebugContext`, `InfoContext`, `WarnContext`, `ErrorContext`) with the request context. Log keys are `snake_case` constants defined in `cmd/logkeys.go`; messages are capitalized. The events logged mirror the Python implementation at each level.
 
 | Level | Event                                                                                | Source              |
 |-------|--------------------------------------------------------------------------------------|---------------------|
