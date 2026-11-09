@@ -17,7 +17,7 @@ on:
   schedule:
     # https://crontab.guru/#0_0_*_*_1
     - cron: "0 0 * * 1"
-# @config-manager:end workflow-on
+      # @config-manager:end workflow-on
 
 # @config-manager:start workflow-permissions
 permissions:
@@ -46,7 +46,7 @@ jobs:
     steps:
       # @config-manager:start harden-runner
       - name: Harden Runner
-        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         # @config-manager:end harden-runner
         # @config-manager:start step-security-hosts
         with:
@@ -198,4 +198,4 @@ jobs:
         with:
           category: "/language:${{matrix.language}}"
           upload: never
-      # @config-manager:end workflow-codeql
+    # @config-manager:end workflow-codeql

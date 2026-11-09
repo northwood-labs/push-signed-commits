@@ -94,7 +94,7 @@ tasks:
         vars: { TEXT: "Installing dependencies from Brewfiles..." }
       - >
         gfind ./tools -type f -name "Brewfile.*"
-        | gxargs -I% brew bundle --upgrade --upgrade-formulae --install --jobs=auto --file="%"
+        | gxargs -I% brew bundle --upgrade --upgrade-formulae --install --file="%"
       - vet https://raw.githubusercontent.com/mtdowling/chag/master/install.sh
   # @config-manager:end installation-standard
 

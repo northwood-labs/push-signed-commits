@@ -38,7 +38,7 @@ tasks:
           TEXT: "Updating all Homebrew dependencies..."
       - for:
           var: BREW
-        cmd: brew bundle --upgrade --upgrade-formulae --install --jobs=auto --file="{{ .ITEM }}"
+        cmd: brew bundle --upgrade --upgrade-formulae --install --file="{{ .ITEM }}"
 
   deps:update:goinstall:
     desc: Update all globally-installed Go packages.

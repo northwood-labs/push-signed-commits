@@ -35,7 +35,7 @@ jobs:
     steps:
       # @config-manager:start harden-runner
       - name: Harden Runner
-        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         # @config-manager:end harden-runner
         # @config-manager:start step-security-hosts
         with:
@@ -248,15 +248,17 @@ jobs:
       # @config-manager:start workflow-commit
       - name: Git commit if changed
         env:
-          GH_TOKEN: ${{ steps.gh_token.outputs.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
+          git config user.name "Northwood Labs (Bot)"
+          git config user.email "bot@northwood-labs.com"
+
           set +e
 
           git add .
           if [[ "$(git status)" -eq 0 ]]; then
             git commit -a -m "automation: Updated AUTHORS and CHANGELOG on $(date)."
             git pull --rebase --autostash
-            git push origin main
+            git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" main
           fi
-      # @config-manager:end workflow-commit
+    # @config-manager:end workflow-commit

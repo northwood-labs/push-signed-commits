@@ -6,6 +6,7 @@
 # TAPS
 
 # @config-manager:start taps
+tap "ewhauser/tap", trusted: true
 tap "go-task/tap", trusted: true
 tap "okooo5km/tap", trusted: true
 tap "oven-sh/bun", trusted: true

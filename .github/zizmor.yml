@@ -52,10 +52,12 @@ rules:
     disable: false
     config:
       allow:
+        - 1password/load-secrets-action
         - actions/*
         - astral-sh/setup-uv
         - github/codeql-action/*
         - google/osv-scanner-action/osv-scanner-action
+        - northwood-labs/*
         - orhun/git-cliff-action
         - ossf/scorecard-action
         - step-security/*
