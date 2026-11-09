@@ -36,6 +36,14 @@ const (
 	// testCommitBody is the local commit message body returned by the git fake
 	// in the push tests.
 	testCommitBody = "Add a file"
+
+	// testHTTPSRemoteURL is the HTTPS remote URL the re-fetch binds to in the
+	// push tests.
+	testHTTPSRemoteURL = "https://github.com/owner/repo.git"
+
+	// testToken is the GitHub token used to authenticate the re-fetch in the
+	// push tests.
+	testToken = "test-token" // lint:not_a_secret
 )
 
 // errBoom is a stand-in transport-layer failure used to wrap the githubgql
@@ -51,6 +59,8 @@ func newTestOptions(localHashes []string) *PushOptions {
 			RepositoryNameWithOwner: "owner/repo",
 			RemoteName:              "origin",
 			RemoteBranchName:        "main",
+			HTTPSRemoteURL:          testHTTPSRemoteURL,
+			Token:                   testToken,
 		},
 		MergeBaseOID: testMergeBaseOID,
 		LocalHashes:  localHashes,
@@ -128,6 +138,8 @@ func TestPushSubsequentCommitUsesPreviousOID(t *testing.T) {
 	require.Len(t, git.RemoteHeadOIDCalls, 1)
 	assert.Equal(t, "origin", git.FetchRemoteBranchCalls[0].RemoteName)
 	assert.Equal(t, "main", git.FetchRemoteBranchCalls[0].RemoteBranchName)
+	assert.Equal(t, testHTTPSRemoteURL, git.FetchRemoteBranchCalls[0].HTTPSRemoteURL)
+	assert.Equal(t, testToken, git.FetchRemoteBranchCalls[0].Token)
 }
 
 // TestPushReverifyMismatchYieldsPartialFailure confirms that when the re-fetched

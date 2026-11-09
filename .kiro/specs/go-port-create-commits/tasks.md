@@ -29,9 +29,9 @@ This plan ports `create_commits.py` to the Go module `go.nwlabs.dev/push-signed-
     - _Requirements: 13.3_
 
 - [x] 2. Implement CLI flags, configuration, and logging
-  - [x] 2.1 Register the six named flags and resolve configuration
-    - In `cmd/root.go` `init()` (marked `// lint:allow_init`), register `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and the repeatable `--verbose` / `-v` count using `f`-prefixed variables
-    - Mark the five required flags with Cobra's required-flag mechanism so an omitted flag reports a usage error and exits non-zero; `--verbose` is optional and defaults to a count of `0`
+  - [x] 2.1 Register the five named flags and resolve configuration
+    - In `cmd/root.go` `init()` (marked `// lint:allow_init`), register `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and the repeatable `--verbose` / `-v` count using `f`-prefixed variables, reading the GitHub token from the `GITHUB_TOKEN` environment variable
+    - Mark the four required flags with Cobra's required-flag mechanism so an omitted flag reports a usage error and exits non-zero; `--verbose` is optional and defaults to a count of `0`
     - Resolve values through koanf in the standard priority order (CLI flag, env, local config, user config, global config) into a `Config` struct, passing flag string values to consumers unaltered
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 

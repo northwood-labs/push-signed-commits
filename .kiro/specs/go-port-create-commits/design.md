@@ -252,16 +252,15 @@ type (
 
 ## Command-line interface and configuration
 
-The root command registers the five required named flags plus the optional verbosity counter in `init()` (marked `// lint:allow_init`). Flag variables use the lowercase `f` prefix.
+The root command registers the four required named flags plus the optional verbosity counter in `init()` (marked `// lint:allow_init`). Flag variables use the lowercase `f` prefix. The GitHub token used for GraphQL authentication is read from the `GITHUB_TOKEN` environment variable rather than a flag.
 
-| Flag                           | Variable         | Required | Default | Consumer                          |
-|--------------------------------|------------------|----------|---------|-----------------------------------|
-| `--github-token`               | `fGithubToken`   | yes      | none    | GraphQL_Client transport (Bearer) |
-| `--repository-name-with-owner` | `fRepoWithOwner` | yes      | none    | GraphQL mutation branch object    |
-| `--local-branch-name`          | `fLocalBranch`   | yes      | none    | Branch_Validator, Git_Client      |
-| `--remote-name`                | `fRemoteName`    | yes      | none    | Branch_Validator, Git_Client      |
-| `--remote-branch-name`         | `fRemoteBranch`  | yes      | none    | Branch_Validator, Git_Client      |
-| `--verbose` / `-v`             | `fVerbose`       | no       | `0`     | logutils configuration            |
+| Flag                           | Variable         | Required | Default | Consumer                       |
+|--------------------------------|------------------|----------|---------|--------------------------------|
+| `--repository-name-with-owner` | `fRepoWithOwner` | yes      | none    | GraphQL mutation branch object |
+| `--local-branch-name`          | `fLocalBranch`   | yes      | none    | Branch_Validator, Git_Client   |
+| `--remote-name`                | `fRemoteName`    | yes      | none    | Branch_Validator, Git_Client   |
+| `--remote-branch-name`         | `fRemoteBranch`  | yes      | none    | Branch_Validator, Git_Client   |
+| `--verbose` / `-v`             | `fVerbose`       | no       | `0`     | logutils configuration         |
 
 Configuration resolves through koanf in the repository's standard priority order: CLI flag, then environment variable, then local config, then user config (`$XDG_CONFIG_HOME/push-signed-commits`), then global config (`/etc/push-signed-commits`). Required flags are enforced by Cobra's required-flag mechanism, which reports a usage error and exits non-zero when any is omitted. Flag values are passed to consumers without transformation, satisfying the parity requirement that string values are not altered.
 

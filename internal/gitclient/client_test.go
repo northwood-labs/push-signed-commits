@@ -15,11 +15,192 @@
 package gitclient
 
 import (
+	"context"
+	"net/url"
+	"path/filepath"
 	"testing"
+	"time"
 
+	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-openapi/testify/assert"
 	"github.com/go-openapi/testify/require"
 )
+
+const (
+	// testRemoteName is the arbitrary remote name used across the
+	// preserved-semantics tests; the stored remote config is never consulted,
+	// so the value only needs to be stable.
+	testRemoteName = "origin"
+
+	// testToken is a dummy token. The file transport ignores HTTP basic auth,
+	// so any non-empty value is harmless and never leaves the machine.
+	testToken = "x-token" // lint:not_a_secret
+
+	// testBranchName is the branch that test fixtures actually create.
+	testBranchName = "main"
+)
+
+// fileURL converts a local directory path into a file:// URL that go-git's
+// file transport accepts, so the preserved-semantics tests drive a real remote
+// without any network I/O.
+func fileURL(t *testing.T, dir string) string {
+	t.Helper()
+
+	return (&url.URL{Scheme: "file", Path: filepath.ToSlash(dir)}).String()
+}
+
+// newLocalClient returns a Client whose storer belongs to a throwaway,
+// non-bare repository in a temp directory. RemoteBranchExists and
+// FetchRemoteBranch only use c.repo.Storer together with the HTTPS URL they are
+// handed, so this local repository is a sufficient, network-free stand-in for a
+// real clone.
+func newLocalClient(t *testing.T) *Client {
+	t.Helper()
+
+	repo, err := gogit.PlainInit(t.TempDir(), false)
+	require.NoError(t, err)
+
+	return &Client{repo: repo}
+}
+
+// newEmptyBareRepo initializes an empty (no commits) bare repository in a temp
+// directory and returns its path. Listing such a repository reports
+// transport.ErrEmptyRemoteRepository.
+func newEmptyBareRepo(t *testing.T) string {
+	t.Helper()
+
+	dir := t.TempDir()
+
+	_, err := gogit.PlainInit(dir, true)
+	require.NoError(t, err)
+
+	return dir
+}
+
+// newBareRepoWithBranch initializes a bare repository in a temp directory,
+// seeds it with a single commit on the given branch, and returns its path. The
+// commit guarantees the repository is non-empty so a List no longer reports
+// ErrEmptyRemoteRepository and instead returns a ref list to match against.
+func newBareRepoWithBranch(t *testing.T, branch string) string {
+	t.Helper()
+
+	bareDir := newEmptyBareRepo(t)
+
+	// A bare repository cannot hold a worktree, so commit into a normal
+	// repository first and then push the branch into the bare one over the
+	// file transport.
+	workRepo, err := gogit.PlainInit(t.TempDir(), false)
+	require.NoError(t, err)
+
+	wt, err := workRepo.Worktree()
+	require.NoError(t, err)
+
+	signature := &object.Signature{
+		Name:  "Test",
+		Email: "test@example.com",
+		When:  time.Unix(0, 0).UTC(),
+	}
+
+	commitHash, err := wt.Commit("seed commit", &gogit.CommitOptions{
+		Author:            signature,
+		Committer:         signature,
+		AllowEmptyCommits: true,
+	})
+	require.NoError(t, err)
+
+	// Point the fresh commit at the requested branch name regardless of the
+	// default branch PlainInit chose, so the fixture always offers exactly the
+	// branch the test asked for.
+	branchRef := plumbing.NewBranchReferenceName(branch)
+	require.NoError(t, workRepo.Storer.SetReference(plumbing.NewHashReference(branchRef, commitHash)))
+
+	remote, err := workRepo.CreateRemote(&config.RemoteConfig{
+		Name: testRemoteName,
+		URLs: []string{fileURL(t, bareDir)},
+	})
+	require.NoError(t, err)
+
+	refSpec := config.RefSpec(branchRef.String() + ":" + branchRef.String())
+	require.NoError(t, remote.Push(&gogit.PushOptions{
+		RefSpecs: []config.RefSpec{refSpec},
+	}))
+
+	return bareDir
+}
+
+// TestRemoteBranchExistsNonMatchingRefList asserts that when the remote
+// repository has refs but none of them match the queried branch,
+// RemoteBranchExists reports the missing branch as (false, nil) — the
+// not-found answer `git ls-remote --exit-code` gives — rather than an error.
+//
+// Validates: Requirements 4.3.
+func TestRemoteBranchExistsNonMatchingRefList(t *testing.T) {
+	bareDir := newBareRepoWithBranch(t, testBranchName)
+	client := newLocalClient(t)
+
+	exists, err := client.RemoteBranchExists(context.Background(), &RemoteBranchExistsOptions{
+		RemoteName:       testRemoteName,
+		RemoteBranchName: "does-not-exist",
+		HTTPSRemoteURL:   fileURL(t, bareDir),
+		Token:            testToken,
+	})
+
+	require.NoError(t, err)
+	assert.False(t, exists)
+}
+
+// TestRemoteBranchExistsEmptyRemote asserts that an empty remote repository
+// (no commits, no refs) is reported as (false, nil). go-git surfaces this as
+// transport.ErrEmptyRemoteRepository, which RemoteBranchExists must translate
+// into the same not-found answer rather than an unexpected failure.
+//
+// Validates: Requirements 4.3.
+func TestRemoteBranchExistsEmptyRemote(t *testing.T) {
+	bareDir := newEmptyBareRepo(t)
+	client := newLocalClient(t)
+
+	exists, err := client.RemoteBranchExists(context.Background(), &RemoteBranchExistsOptions{
+		RemoteName:       testRemoteName,
+		RemoteBranchName: testBranchName,
+		HTTPSRemoteURL:   fileURL(t, bareDir),
+		Token:            testToken,
+	})
+
+	require.NoError(t, err)
+	assert.False(t, exists)
+}
+
+// TestFetchRemoteBranchAlreadyUpToDate asserts that a fetch which brings in no
+// new objects is treated as success. The first fetch populates the
+// remote-tracking ref; the second fetch has nothing to do, so go-git returns
+// gogit.NoErrAlreadyUpToDate, which FetchRemoteBranch must swallow and report
+// as a nil error.
+//
+// Validates: Requirements 4.3.
+func TestFetchRemoteBranchAlreadyUpToDate(t *testing.T) {
+	bareDir := newBareRepoWithBranch(t, testBranchName)
+	client := newLocalClient(t)
+
+	opts := &FetchRemoteBranchOptions{
+		RemoteName:       testRemoteName,
+		RemoteBranchName: testBranchName,
+		HTTPSRemoteURL:   fileURL(t, bareDir),
+		Token:            testToken,
+	}
+
+	// The first fetch pulls the branch down; it must succeed so the second
+	// fetch can exercise the already-up-to-date path.
+	err := client.FetchRemoteBranch(context.Background(), opts)
+	require.NoError(t, err)
+
+	// The second fetch finds nothing new. go-git returns NoErrAlreadyUpToDate,
+	// which must be treated as success.
+	err = client.FetchRemoteBranch(context.Background(), opts)
+	assert.NoError(t, err)
+}
 
 // TestSplitNameStatusLines verifies the line-splitting transformation that
 // NameStatus applies to raw `git diff --name-status` output. The raw lines must

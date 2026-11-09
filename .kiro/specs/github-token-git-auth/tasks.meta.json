@@ -1,0 +1,387 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Add the options structs and change the two method signatures": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543688
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793550071
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793592580
+      }
+    ],
+    "2.1 Add the auth username constant and basic-auth constructor": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543751
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793605570
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793687354
+      }
+    ],
+    "2.2 Rewrite `RemoteBranchExists` and `FetchRemoteBranch`": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543794
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793690801
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793769116
+      }
+    ],
+    "2.3 Write property test for transport auth shape": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543827
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793773177
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793859818
+      }
+    ],
+    "2.4 Write unit tests for preserved client semantics": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543860
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793862797
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793995764
+      }
+    ],
+    "3. Update the test fake to the new signatures and recorded fields": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543895
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793998895
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794058833
+      }
+    ],
+    "4.1 Add token and HTTPS URL to `pusher.Config` and update `verifyRemoteHead`": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543928
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794061857
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794109696
+      }
+    ],
+    "4.2 Update pusher tests for the new fetch call shape": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543960
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794112895
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794165866
+      }
+    ],
+    "5. Add the ErrGithubTokenMissing sentinel": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793543991
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794169192
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794206930
+      }
+    ],
+    "6.1 Add the `buildHTTPSRemoteURL` helper": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544026
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794210051
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794241191
+      }
+    ],
+    "6.2 Write property test for the constructed URL shape": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544058
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794244184
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794313304
+      }
+    ],
+    "6.3 Read GITHUB_TOKEN early in `runPipeline` and thread it down": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544090
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794316662
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794459794
+      }
+    ],
+    "6.4 Update `verifyRemoteState` to build the options structs": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544120
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794463473
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794468078
+      }
+    ],
+    "7. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544153
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794471598
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794478002
+      }
+    ],
+    "8.1 Write fake-based test for the cmd verify path URL and token": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544184
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794482813
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794571356
+      }
+    ],
+    "8.2 Write missing-token failure and ordering test": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544231
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794574371
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794638579
+      }
+    ],
+    "9.1 Update `action.yml`": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544271
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794642158
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795377896
+      }
+    ],
+    "9.2 Update `README.md`": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544305
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794644814
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795379240
+      }
+    ],
+    "9.3 Scrub prior spec documents": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544350
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794647375
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795380207
+      }
+    ],
+    "10. Final checkpoint - Verify zero diagnostics and passing tests": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793544388
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795383693
+      },
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795396601
+      }
+    ],
+    "1. Change the GitClient interface and add the options structs": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793592635
+      }
+    ],
+    "2. Rewrite the production client to use an in-memory HTTPS remote with basic auth": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792793995825
+      }
+    ],
+    "4. Extend the pusher carrier and re-verify path": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794165918
+      }
+    ],
+    "6. Wire token reading and HTTPS URL construction into the cmd layer": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794468128
+      }
+    ],
+    "8. Add cmd-level wiring and failure tests using the fake": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792794638626
+      }
+    ],
+    "9. Remove --github-token references from the manifest and documentation": [
+      {
+        "executionId": "b56501b7-5c6f-4c8f-97e3-76ea3544d83a",
+        "chatSessionId": "sess_8f3d70cc-4005-4c4e-9247-ea2ca238d2a7",
+        "timestamp": 1792795380245
+      }
+    ]
+  }
+}

@@ -41,11 +41,11 @@ Testing for the Go port uses traditional, table-based Go tests (standard `testin
 
 #### Acceptance Criteria
 
-1. THE Argument_Parser SHALL accept six named flags: `--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and `--verbose` / `-v`.
+1. THE Argument_Parser SHALL accept five named flags: `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, `--remote-branch-name`, and `--verbose` / `-v`.
 2. THE Argument_Parser SHALL accept the named flags in any order.
 3. WHERE the `--verbose` / `-v` flag is omitted, THE Argument_Parser SHALL use the default count `0`, which selects the `WARN` level.
-4. IF any required flag (`--github-token`, `--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, or `--remote-branch-name`) is omitted, THEN THE Argument_Parser SHALL report a usage error and exit with a non-zero exit code.
-5. THE Argument_Parser SHALL treat the `--github-token` flag value as the GitHub personal access token used for GraphQL authentication.
+4. IF any required flag (`--repository-name-with-owner`, `--local-branch-name`, `--remote-name`, or `--remote-branch-name`) is omitted, THEN THE Argument_Parser SHALL report a usage error and exit with a non-zero exit code.
+5. THE Argument_Parser SHALL read the GitHub personal access token used for GraphQL authentication from the `GITHUB_TOKEN` environment variable.
 6. THE Argument_Parser SHALL treat the `--repository-name-with-owner` flag value as the GitHub repository identifier in owner/name form used in the GraphQL mutation.
 7. THE Argument_Parser SHALL provide each flag value to the component that consumes it without altering the flag value's string value.
 

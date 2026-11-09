@@ -7,10 +7,6 @@ description: |
   This GraphQL API extracts authorship information from the credential used for authentication, and automatically marks commits created using GitHub App installation credentials as "verified".
 
 inputs:
-  github-token:
-    description: The GitHub token to use for identity. Ideally, this should come from a GitHub App.
-    required: true
-
   owner:
     description: "Repository owner."
     required: true
@@ -40,7 +36,8 @@ runs:
     - name: Sign the commit
       shell: bash -euo pipefail
       env:
-        GITHUB_TOKEN: ${{ inputs.github-token }}
+        # The token comes from the workflow's automatic GITHUB_TOKEN (github.token).
+        GITHUB_TOKEN: ${{ github.token }}
         REPO: ${{ inputs.repo }}
         LOCAL_BRANCH: ${{ inputs.local_branch }}
         REMOTE_BRANCH: ${{ inputs.remote_branch }}

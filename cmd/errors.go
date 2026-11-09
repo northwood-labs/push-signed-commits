@@ -37,6 +37,11 @@ var (
 	// safely.
 	ErrRemoteBranchDiverged = errors.New("remote branch has diverged from the local branch")
 
+	// ErrGithubTokenMissing indicates that the GITHUB_TOKEN environment variable
+	// is not set or is empty, so the tool has no credential for authenticating
+	// its git and GraphQL operations.
+	ErrGithubTokenMissing = errors.New("the GITHUB_TOKEN environment variable is not set")
+
 	// ErrGithubAPI indicates that GitHub's GraphQL API returned an unexpected
 	// or error response while creating a commit.
 	ErrGithubAPI = errors.New("GitHub API returned an unexpected response")

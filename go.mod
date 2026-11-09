@@ -16,6 +16,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.64
 	go.nwlabs.dev/cli-helpers/v2 v2.0.0-20261014084647-dc1be8030ade
 	go.nwlabs.dev/x/logutils v0.0.0-20260805211137-0f40adc35a8a
+	pgregory.net/rapid v1.3.0
 )
 
 require (

@@ -21,14 +21,15 @@ type (
 	// return wrapped errors; none call [os.Exit].
 	GitClient interface {
 		// RemoteBranchExists reports whether the remote branch exists,
-		// mirroring `git ls-remote --exit-code --heads <remote> <branch>`. A
-		// missing branch is reported as (false, nil); only unexpected failures
-		// return a non-nil error.
-		RemoteBranchExists(ctx context.Context, remoteName, remoteBranchName string) (bool, error)
+		// mirroring `git ls-remote --exit-code --heads <remote> <branch>`
+		// against the HTTPS remote URL using token authentication. A missing
+		// branch is reported as (false, nil); only unexpected failures return a
+		// non-nil error.
+		RemoteBranchExists(ctx context.Context, opts *RemoteBranchExistsOptions) (bool, error)
 
 		// FetchRemoteBranch runs the equivalent of `git fetch <remote>
-		// <branch>`.
-		FetchRemoteBranch(ctx context.Context, remoteName, remoteBranchName string) error
+		// <branch>` against the HTTPS remote URL using token authentication.
+		FetchRemoteBranch(ctx context.Context, opts *FetchRemoteBranchOptions) error
 
 		// RebaseOnto attempts `git rebase <remote>/<branch> <local>` and, on
 		// failure, runs `git rebase --abort` before returning an error.
@@ -56,6 +57,24 @@ type (
 		// FileContentsAtCommit returns the raw bytes of a file at a commit,
 		// mirroring `git show <hash>:<path>` in binary mode.
 		FileContentsAtCommit(ctx context.Context, commitHash, path string) ([]byte, error)
+	}
+
+	// RemoteBranchExistsOptions carries the selectors and authentication
+	// inputs for RemoteBranchExists. It is passed by pointer.
+	RemoteBranchExistsOptions struct {
+		RemoteName       string
+		RemoteBranchName string
+		HTTPSRemoteURL   string
+		Token            string
+	}
+
+	// FetchRemoteBranchOptions carries the selectors and authentication inputs
+	// for FetchRemoteBranch. It is passed by pointer.
+	FetchRemoteBranchOptions struct {
+		RemoteName       string
+		RemoteBranchName string
+		HTTPSRemoteURL   string
+		Token            string
 	}
 
 	// RebaseOptions carries the branch selectors for RebaseOnto. It is passed

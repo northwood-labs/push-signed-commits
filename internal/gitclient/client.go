@@ -29,6 +29,13 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/plumbing/transport"
+	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
+)
+
+const (
+	// authUsername is the fixed username go-git basic auth uses for GitHub
+	// token authentication; the token itself is supplied as the password.
+	authUsername = "x-access-token"
 )
 
 var (
@@ -113,19 +120,35 @@ func New(path string) (*Client, error) {
 	return &Client{repo: repo}, nil
 }
 
-// RemoteBranchExists reports whether the remote branch exists, mirroring `git
-// ls-remote --exit-code --heads <remote> <branch>`. It lists the remote's
-// references and reports whether refs/heads/<remoteBranchName> is present. A
-// missing branch (an empty match, equivalent to the `--exit-code` non-zero
-// result) is reported as (false, nil); only unexpected failures such as a
-// transport error return a non-nil error.
-func (c *Client) RemoteBranchExists(ctx context.Context, remoteName, remoteBranchName string) (bool, error) {
-	remote, err := c.repo.Remote(remoteName)
-	if err != nil {
-		return false, fmt.Errorf("%w: %w", ErrRemoteBranchList, err)
+// newBasicAuth builds the go-git HTTP basic-auth credential used for token
+// authentication against the HTTPS remote URL. The username is the fixed
+// authUsername value and the password is the supplied token.
+func newBasicAuth(token string) *githttp.BasicAuth {
+	return &githttp.BasicAuth{
+		Username: authUsername,
+		Password: token,
 	}
+}
 
-	refs, err := remote.ListContext(ctx, &gogit.ListOptions{})
+// RemoteBranchExists reports whether the remote branch exists, mirroring `git
+// ls-remote --exit-code --heads <remote> <branch>` against the HTTPS remote URL
+// using token authentication. It builds an in-memory remote bound to
+// opts.HTTPSRemoteURL (so the stored, possibly-SSH remote URL is never
+// consulted), lists the remote's references, and reports whether
+// refs/heads/<opts.RemoteBranchName> is present. A missing branch (an empty
+// match, equivalent to the `--exit-code` non-zero result) is reported as
+// (false, nil); an empty remote repository is likewise reported as (false,
+// nil). Only unexpected failures such as a transport error return a non-nil
+// error.
+func (c *Client) RemoteBranchExists(ctx context.Context, opts *RemoteBranchExistsOptions) (bool, error) {
+	remote := gogit.NewRemote(c.repo.Storer, &config.RemoteConfig{
+		Name: opts.RemoteName,
+		URLs: []string{opts.HTTPSRemoteURL},
+	})
+
+	refs, err := remote.ListContext(ctx, &gogit.ListOptions{
+		Auth: newBasicAuth(opts.Token),
+	})
 	if err != nil {
 		// An empty remote repository has no branches, which is the same
 		// not-found answer `git ls-remote --exit-code` reports, so it is not an
@@ -137,7 +160,7 @@ func (c *Client) RemoteBranchExists(ctx context.Context, remoteName, remoteBranc
 		return false, fmt.Errorf("%w: %w", ErrRemoteBranchList, err)
 	}
 
-	target := plumbing.NewBranchReferenceName(remoteBranchName)
+	target := plumbing.NewBranchReferenceName(opts.RemoteBranchName)
 	for _, ref := range refs {
 		if ref.Name() == target {
 			return true, nil
@@ -147,23 +170,30 @@ func (c *Client) RemoteBranchExists(ctx context.Context, remoteName, remoteBranc
 	return false, nil
 }
 
-// FetchRemoteBranch runs the equivalent of `git fetch <remote> <branch>`,
-// pulling the latest remote branch state into the local repository without
-// integrating it. A go-git "already up-to-date" result is treated as success.
-func (c *Client) FetchRemoteBranch(
-	ctx context.Context,
-	remoteName, remoteBranchName string,
-) error {
+// FetchRemoteBranch runs the equivalent of `git fetch <remote> <branch>`
+// against the HTTPS remote URL using token authentication, pulling the latest
+// remote branch state into the local repository without integrating it. It
+// builds an in-memory remote bound to opts.HTTPSRemoteURL (so the stored,
+// possibly-SSH remote URL is never consulted) and fetches through it, writing
+// the fetched objects and the remote-tracking ref into the repository's object
+// store exactly as a fetch against the stored remote would. A go-git "already
+// up-to-date" result is treated as success.
+func (c *Client) FetchRemoteBranch(ctx context.Context, opts *FetchRemoteBranchOptions) error {
 	refSpec := config.RefSpec(fmt.Sprintf(
 		"+refs/heads/%s:refs/remotes/%s/%s",
-		remoteBranchName,
-		remoteName,
-		remoteBranchName,
+		opts.RemoteBranchName,
+		opts.RemoteName,
+		opts.RemoteBranchName,
 	))
 
-	err := c.repo.FetchContext(ctx, &gogit.FetchOptions{
-		RemoteName: remoteName,
-		RefSpecs:   []config.RefSpec{refSpec},
+	remote := gogit.NewRemote(c.repo.Storer, &config.RemoteConfig{
+		Name: opts.RemoteName,
+		URLs: []string{opts.HTTPSRemoteURL},
+	})
+
+	err := remote.FetchContext(ctx, &gogit.FetchOptions{
+		RefSpecs: []config.RefSpec{refSpec},
+		Auth:     newBasicAuth(opts.Token),
 	})
 	if err != nil && !errors.Is(err, gogit.NoErrAlreadyUpToDate) {
 		return fmt.Errorf("%w: %w", ErrRemoteFetch, err)
@@ -292,6 +322,7 @@ func (c *Client) CommitsNotOnRemote(_ context.Context, opts *CommitRangeOptions)
 	newestFirst := []string(nil)
 
 	walker := object.NewCommitPreorderIter(localCommit, nil, nil)
+
 	err = walker.ForEach(func(commit *object.Commit) error {
 		if _, found := excluded[commit.Hash]; found {
 			// This commit (and its ancestors) are already on the remote, so

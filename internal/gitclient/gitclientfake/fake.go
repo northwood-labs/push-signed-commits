@@ -123,12 +123,16 @@ type (
 	RemoteBranchExistsCall struct {
 		RemoteName       string
 		RemoteBranchName string
+		HTTPSRemoteURL   string
+		Token            string
 	}
 
 	// FetchRemoteBranchCall records one invocation of Fake.FetchRemoteBranch.
 	FetchRemoteBranchCall struct {
 		RemoteName       string
 		RemoteBranchName string
+		HTTPSRemoteURL   string
+		Token            string
 	}
 
 	// RebaseOntoCall records one invocation of Fake.RebaseOnto.
@@ -172,10 +176,12 @@ type (
 
 // RemoteBranchExists records its arguments and returns the table-defined result
 // from RemoteBranchExistsResult.
-func (f *Fake) RemoteBranchExists(_ context.Context, remoteName, remoteBranchName string) (bool, error) {
+func (f *Fake) RemoteBranchExists(_ context.Context, opts *gitclient.RemoteBranchExistsOptions) (bool, error) {
 	f.RemoteBranchExistsCalls = append(f.RemoteBranchExistsCalls, RemoteBranchExistsCall{
-		RemoteName:       remoteName,
-		RemoteBranchName: remoteBranchName,
+		RemoteName:       opts.RemoteName,
+		RemoteBranchName: opts.RemoteBranchName,
+		HTTPSRemoteURL:   opts.HTTPSRemoteURL,
+		Token:            opts.Token,
 	})
 
 	return f.RemoteBranchExistsResult.Exists, f.RemoteBranchExistsResult.Err
@@ -183,10 +189,12 @@ func (f *Fake) RemoteBranchExists(_ context.Context, remoteName, remoteBranchNam
 
 // FetchRemoteBranch records its arguments and returns the table-defined result
 // from FetchRemoteBranchResult.
-func (f *Fake) FetchRemoteBranch(_ context.Context, remoteName, remoteBranchName string) error {
+func (f *Fake) FetchRemoteBranch(_ context.Context, opts *gitclient.FetchRemoteBranchOptions) error {
 	f.FetchRemoteBranchCalls = append(f.FetchRemoteBranchCalls, FetchRemoteBranchCall{
-		RemoteName:       remoteName,
-		RemoteBranchName: remoteBranchName,
+		RemoteName:       opts.RemoteName,
+		RemoteBranchName: opts.RemoteBranchName,
+		HTTPSRemoteURL:   opts.HTTPSRemoteURL,
+		Token:            opts.Token,
 	})
 
 	return f.FetchRemoteBranchResult.Err

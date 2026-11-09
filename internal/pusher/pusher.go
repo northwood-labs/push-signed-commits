@@ -81,6 +81,14 @@ type (
 		// RemoteBranchName is the unqualified remote branch name the commits
 		// are created on.
 		RemoteBranchName string
+
+		// HTTPSRemoteURL is the HTTPS remote URL the re-fetch binds to, so the
+		// stored, possibly-SSH remote URL is never consulted.
+		HTTPSRemoteURL string
+
+		// Token is the GitHub token used to authenticate the re-fetch against
+		// the HTTPS remote URL.
+		Token string
 	}
 
 	// PushOptions carries everything Push needs beyond the git and GraphQL
@@ -256,7 +264,12 @@ func verifyRemoteHead(
 		return nil
 	}
 
-	err := git.FetchRemoteBranch(ctx, opts.Config.RemoteName, opts.Config.RemoteBranchName)
+	err := git.FetchRemoteBranch(ctx, &gitclient.FetchRemoteBranchOptions{
+		RemoteName:       opts.Config.RemoteName,
+		RemoteBranchName: opts.Config.RemoteBranchName,
+		HTTPSRemoteURL:   opts.Config.HTTPSRemoteURL,
+		Token:            opts.Config.Token,
+	})
 	if err != nil {
 		return fmt.Errorf(
 			"failed to re-fetch the remote branch before the next commit: %w",

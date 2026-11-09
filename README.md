@@ -49,8 +49,9 @@ The action is intended to be used by GitHub Actions as a follow-up to a commit s
 
 - name: Push commits as verified
   uses: northwood-labs/push-signed-commits@v2
+  env:
+    GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
   with:
-    github-token: ${{ steps.generate-token.outputs.token }}
     local_branch: main
     remote_name: origin
     remote_branch: main

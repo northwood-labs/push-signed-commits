@@ -83,6 +83,18 @@ var (
 	}
 )
 
+type (
+	// verifyRemoteStateInput carries the inputs for verifyRemoteState: the
+	// resolved configuration plus the token and HTTPS remote URL used to
+	// authenticate the existence check and the fetch against the HTTPS remote.
+	// It is passed by pointer.
+	verifyRemoteStateInput struct {
+		Config   *Config
+		Token    string
+		HTTPSURL string
+	}
+)
+
 func init() { // lint:allow_init
 	flags := rootCmd.Flags()
 
@@ -150,6 +162,14 @@ func Execute() error {
 	return nil
 }
 
+// buildHTTPSRemoteURL builds the well-known GitHub HTTPS clone URL of the form
+// https://github.com/<owner>/<repository>.git from the owner/name pair. The
+// ownerRepo argument is the "owner/name" slug (for example, cfg.OwnerRepo), and
+// the returned URL always uses the fixed github.com HTTPS shape.
+func buildHTTPSRemoteURL(ownerRepo string) string {
+	return "https://github.com/" + ownerRepo + ".git"
+}
+
 // runPipeline runs the tool's full pipeline after configuration is resolved: it
 // validates the local and remote branch names, verifies the remote branch state
 // (existence, fetch, rebase, merge base, and divergence), collects the local
@@ -178,14 +198,25 @@ func runPipeline(ctx context.Context, cfg *Config) error {
 		return fmt.Errorf("failed to validate the remote branch name: %w", err)
 	}
 
+	token := os.Getenv("GITHUB_TOKEN")
+	if token == "" {
+		return fmt.Errorf("%w", ErrGithubTokenMissing)
+	}
+
+	httpsURL := buildHTTPSRemoteURL(cfg.OwnerRepo)
+
 	git, err := gitclient.New(".")
 	if err != nil {
 		return fmt.Errorf("failed to open the local git repository: %w", err)
 	}
 
-	gql := githubgql.NewClient(os.Getenv("GITHUB_TOKEN"))
+	gql := githubgql.NewClient(token)
 
-	mergeBase, err := verifyRemoteState(ctx, git, cfg)
+	mergeBase, err := verifyRemoteState(ctx, git, &verifyRemoteStateInput{
+		Config:   cfg,
+		Token:    token,
+		HTTPSURL: httpsURL,
+	})
 	if err != nil {
 		return fmt.Errorf("failed to verify the remote branch state: %w", err)
 	}
@@ -204,6 +235,8 @@ func runPipeline(ctx context.Context, cfg *Config) error {
 			RepositoryNameWithOwner: cfg.OwnerRepo,
 			RemoteName:              cfg.RemoteName,
 			RemoteBranchName:        cfg.RemoteBranch,
+			HTTPSRemoteURL:          httpsURL,
+			Token:                   token,
 		},
 		MergeBaseOID: mergeBase,
 		LocalHashes:  hashes,
@@ -225,8 +258,19 @@ func runPipeline(ctx context.Context, cfg *Config) error {
 // the requirements name: a missing branch to [ErrRemoteBranchNotFound], an
 // aborted rebase to [ErrRebaseAborted], and a diverged head to
 // [ErrRemoteBranchDiverged].
-func verifyRemoteState(ctx context.Context, git gitclient.GitClient, cfg *Config) (string, error) {
-	exists, err := git.RemoteBranchExists(ctx, cfg.RemoteName, cfg.RemoteBranch)
+//
+// The token and HTTPS remote URL carried on the input are threaded into the
+// existence check and the fetch so both transport operations authenticate
+// against the HTTPS remote URL.
+func verifyRemoteState(ctx context.Context, git gitclient.GitClient, input *verifyRemoteStateInput) (string, error) {
+	cfg := input.Config
+
+	exists, err := git.RemoteBranchExists(ctx, &gitclient.RemoteBranchExistsOptions{
+		RemoteName:       cfg.RemoteName,
+		RemoteBranchName: cfg.RemoteBranch,
+		HTTPSRemoteURL:   input.HTTPSURL,
+		Token:            input.Token,
+	})
 	if err != nil {
 		return "", fmt.Errorf("failed to check whether the remote branch exists: %w", err)
 	}
@@ -240,7 +284,12 @@ func verifyRemoteState(ctx context.Context, git gitclient.GitClient, cfg *Config
 		)
 	}
 
-	err = git.FetchRemoteBranch(ctx, cfg.RemoteName, cfg.RemoteBranch)
+	err = git.FetchRemoteBranch(ctx, &gitclient.FetchRemoteBranchOptions{
+		RemoteName:       cfg.RemoteName,
+		RemoteBranchName: cfg.RemoteBranch,
+		HTTPSRemoteURL:   input.HTTPSURL,
+		Token:            input.Token,
+	})
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch the remote branch: %w", err)
 	}
